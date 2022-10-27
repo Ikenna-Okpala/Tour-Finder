@@ -10,4 +10,4 @@ router.route("/")
     .post(authController.protect, authController.restrictTo("user"),
         reviewController.createReview)
 
-module.exports = router
+module.exports = router    
