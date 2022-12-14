@@ -132,6 +132,13 @@ tourSchema.virtual("durationWeeks").get(function () {
     return this.duration / 7
 })
 
+//virtual populate
+tourSchema.virtual("reviews", {
+    ref: "Review",
+    foreignField: "tour",
+    localField: "_id"
+})
+
 //document middleware runs before .save() and .create() not anything else
 
 tourSchema.pre("save", function (next) {

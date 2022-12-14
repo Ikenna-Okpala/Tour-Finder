@@ -2,8 +2,8 @@ const e = require("express")
 const fs = require("fs")
 const AppError = require("../utils/appError")
 const Tour = require("./../models/tourModel")
-const APIFeatures = require("./../utils/apiFeatures")
 const catchAsync = require("./../utils/catchAsync")
+const factory = require("./handlerFactory")
 
 //const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`))
 
@@ -14,88 +14,16 @@ exports.aliasTopTours = (req, res, next) => {
     req.query.fields = "name,price,ratingsAverage,summary,difficulty"
     next()
 }
-exports.getTours = catchAsync(async (req, res, next) => {
+exports.getTours = factory.getAll(Tour)
 
-    //Execute query
-    const features = new APIFeatures(Tour.find(), req.query).filter().sort()
-        .limitFields()
-        .paginate()
-    const tours = await features.query
+exports.getTourById = factory.getOne(Tour, { path: "reviews" })
 
-    //no reason for not using this
-    //const tours = await Tour.find().where("duration").equals(5).where("difficulty").equals("easy")
+exports.patchTour = factory.updateOne(Tour)
 
-    res.status(200).json({
-        status: "success",
-        requestedAt: req.requestTime,
-        results: tours.length,
-        data: {
-            tours: tours
-        }
-    })
+exports.deleteTour = factory.deleteOne(Tour)
 
-})
+exports.createTour = factory.createOne(Tour)
 
-exports.getTourById = catchAsync(async (req, res, next) => {
-    //Tour.findOne({_id: req.params.id})
-    const tour = await Tour.findById(req.params.id)
-
-    if (!tour) {
-        return next(new AppError("no tour found with that ID", 404))
-    }
-    res.status(200).json({
-        status: "success",
-        data: {
-            tour: tour
-        }
-    })
-
-})
-
-
-exports.createTour = catchAsync(async (req, res, next) => {
-
-    const newTour = await Tour.create(req.body)
-
-    res.status(201).json({
-        status: "Success",
-        data: {
-            tour: newTour
-        }
-    })
-    //model.protoype.save
-})
-exports.patchTour = catchAsync(async (req, res, next) => {
-    const newTour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true
-    })
-    if (!newTour) {
-        return next(new AppError("no tour found with that ID", 404))
-    }
-    // when we update a res, we send 200
-    res.status(200).json({
-        status: "Success",
-        data: {
-            tour: newTour
-        }
-    })
-
-
-})
-
-exports.deleteTour = catchAsync(async (req, res, next) => {
-    const tour = await Tour.findByIdAndDelete(req.params.id)
-    if (!tour) {
-        return next(new AppError("no tour found with that ID", 404))
-    }
-    // when we delete a res, we send 204
-    res.status(204).json({
-        status: "Success",
-        data: null
-    })
-
-})
 exports.getTourStats = catchAsync(async (req, res, next) => {
 
     //aggregation is a pipeline for db
