@@ -19,6 +19,15 @@ router.route("/")
     .get(tourController.getTours)
     .post(authController.protect, authController.restrictTo("admin", "lead-guide"), tourController.createTour)
 
+// tours-distance?distance=2333&center=-40,45&unit=mi
+// tour-distance/233/center/-40,45/unit/mi
+
+router.route("/tours-within/:distance/center/:latlng/unit/:unit")
+    .get(tourController.getToursWithin)
+
+router.route("/distances/:latlng/unit/:unit")
+    .get(tourController.getDistances)
+
 router.route("/:id")
     .get(tourController.getTourById)
     .patch(authController.protect, authController.restrictTo("admin", "lead-guide"), tourController.patchTour)

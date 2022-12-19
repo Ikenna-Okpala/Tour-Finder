@@ -19,23 +19,24 @@ const reviewSchema = new mongoose.Schema({
         select: false
     },
 
-    tour: [
-        {
-            type: mongoose.Schema.ObjectId,
-            ref: "Tour",
-            required: [true, "Review must belong to a tour"],
-            unique: false
-        }
-    ],
+    tour:
+        [
+            {
+                type: mongoose.Schema.ObjectId,
+                ref: "Tour",
+                required: [true, "Review must belong to a tour"],
+            }
+        ]
+    ,
 
-    user: [
-        {
-            type: mongoose.Schema.ObjectId,
-            ref: "User",
-            required: [true, "Review must belong to a user"],
-            unique: false
-        }
-    ]
+    user:
+        [
+            {
+                type: mongoose.Schema.ObjectId,
+                ref: "User",
+                required: [true, "Review must belong to a user"],
+            }
+        ]
 },
     {
         toJSON: { virtuals: true },
@@ -101,7 +102,10 @@ reviewSchema.post(/^findOneAnd/, async function () {
     await this.review.constructor.calcAverageRatings(this.review.tour)
 })
 
+//does not work
+
 reviewSchema.index({ tour: 1, user: 1 }, { unique: true })
+
 
 module.exports = mongoose.model("Review", reviewSchema)
 
