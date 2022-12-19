@@ -126,6 +126,11 @@ const tourSchema = new mongoose.Schema({
 }
 )
 
+//compound indexes
+
+tourSchema.index({ price: 1, ratingsAverage: -1 })
+tourSchema.index({ slug: 1 })
+
 //virtual for handlinr fields not stored in db
 tourSchema.virtual("durationWeeks").get(function () {
     //use function when you want to reference this as the caller of the function
@@ -194,3 +199,5 @@ tourSchema.pre("aggregate", function (next) {
 })
 
 module.exports = mongoose.model("Tour", tourSchema)
+
+//balance frequency of query with cost maintaining index and w/r ratio

@@ -77,6 +77,8 @@ exports.getAll = Model => catchAsync(async (req, res, next) => {
     const features = new APIFeatures(Model.find(filter), req.query).filter().sort()
         .limitFields()
         .paginate()
+
+    //const doc = await features.query.explain()
     const doc = await features.query
 
     //no reason for not using this
