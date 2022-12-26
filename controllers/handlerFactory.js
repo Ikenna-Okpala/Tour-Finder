@@ -26,7 +26,7 @@ exports.updateOne = Model => catchAsync(async (req, res, next) => {
     }
     // when we update a res, we send 200
     res.status(200).json({
-        status: "Success",
+        status: "success",
         data: {
             data: doc
         }

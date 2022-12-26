@@ -1,31 +1,59 @@
 const AppError = require("../utils/appError")
 
-const sendErrorForDev = (error, res) => {
-    res.status(error.statusCode).json({
-        status: error.status,
-        error: error,
-        message: error.message,
-        stack: error.stack
-    })
-}
-
-const sendErrorForProd = (error, res) => {
-    //Input Error
-    if (error.isOperational) {
+const sendErrorForDev = (error, req, res) => {
+    //API
+    if (req.originalUrl.startsWith("/api")) {
         res.status(error.statusCode).json({
             status: error.status,
+            error: error,
             message: error.message,
+            stack: error.stack
         })
     }
-    //Unknown error
+    //Rendered error website
     else {
-        console.error("Error", error)
-        res.status(500).json({
-            status: "error",
-            message: "Something went very wrong"
+        res.status(error.statusCode).render("error", {
+            title: "Something went wrong!",
+            msg: error.message
         })
     }
+}
 
+const sendErrorForProd = (error, req, res) => {
+    //Input Error
+    if (req.originalUrl.startsWith("/api")) {
+        if (error.isOperational) {
+            res.status(error.statusCode).json({
+                status: error.status,
+                message: error.message,
+            })
+        }
+        //Unknown error do not leak details
+        else {
+            console.error("Error", error)
+            res.status(500).json({
+                status: "error",
+                message: "Something went very wrong"
+            })
+        }
+
+    }
+    else {
+        if (error.isOperational) {
+            res.status(error.statusCode).render("error", {
+                title: "Something went wrong!",
+                msg: error.message
+            })
+        }
+        //unknown error do not leak details
+        else {
+
+            res.status(error.statusCode).render("error", {
+                title: "Something went wrong!",
+                msg: "Please try again later."
+            })
+        }
+    }
 }
 const handleCastErrorDB = err => {
     const message = `Invalid ${err.path}: ${err.value}`
@@ -55,10 +83,13 @@ module.exports = (error, req, res, next) => {
     error.status = error.status || "error"
 
     if (process.env.NODE_ENV === "development") {
-        sendErrorForDev(error, res)
+        sendErrorForDev(error, req, res)
     }
     else if (process.env.NODE_ENV === "production") {
         let errorCopy = { ...error }
+
+        errorCopy.message = error.message
+
         if (errorCopy.name === "CastError") {
             errorCopy = handleCastErrorDB(errorCopy)
         }
@@ -72,7 +103,7 @@ module.exports = (error, req, res, next) => {
             errorCopy = handleJWTError(errorCopy)
         }
         if (errorCopy.name === "TokenExpiredError") errorCopy = handleJWTExpiredError(errorCopy)
-        sendErrorForProd(errorCopy, res)
+        sendErrorForProd(errorCopy, req, res)
     }
 
 }

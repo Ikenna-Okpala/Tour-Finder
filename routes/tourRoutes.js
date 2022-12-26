@@ -30,7 +30,10 @@ router.route("/distances/:latlng/unit/:unit")
 
 router.route("/:id")
     .get(tourController.getTourById)
-    .patch(authController.protect, authController.restrictTo("admin", "lead-guide"), tourController.patchTour)
+    .patch(authController.protect, authController.restrictTo("admin", "lead-guide"), tourController.uploadTourImages,
+
+        tourController.resizeTourImages,
+        tourController.patchTour)
     .delete(authController.protect,
         authController.restrictTo("admin", "lead-guide"),
         tourController.deleteTour)

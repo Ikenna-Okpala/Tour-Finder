@@ -67,12 +67,24 @@ exports.login = catchAsync(async (req, res, next) => {
     createSendToken(user, 200, res)
 })
 
+exports.logout = (req, res) => {
+    res.cookie("jwt", "logged out", {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true
+    })
+
+    res.status(200).json({
+        status: "success"
+    })
+}
 exports.protect = catchAsync(async (req, res, next) => {
     //1) Getting token and check if it exists
     //Bearer is a standard format
     let token
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
         token = req.headers.authorization.split(" ")[1]
+    } else if (req.cookies.jwt) {
+        token = req.cookies.jwt
     }
 
     if (!token) {
@@ -94,6 +106,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
     //GRANT ACCESS TO PROTECTED ROUTE
     req.user = currentUser
+    res.locals.user = currentUser
     next()
 })
 
@@ -192,3 +205,36 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     //4) Log the user in send web token
     createSendToken(user, 200, res)
 })
+
+//Only for rendered pages
+exports.isLoggedIn = async (req, res, next) => {
+    //1) Getting token and check if it exists
+    //Bearer is a standard format
+    try {
+        if (req.cookies.jwt) {
+            const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET)
+
+            //3) Check if user still exists
+            const currentUser = await User.findById(decoded.id)
+            if (!currentUser) {
+                return next()
+            }
+            //4) Check if user changed password after the token was issued
+            if (currentUser.changePasswordAfter(decoded.iat)) {
+                return next()
+            }
+
+            //There is a logged in user
+            res.locals.user = currentUser
+            next()
+        }
+        else {
+            next()
+        }
+    }
+    catch (error) {
+        next()
+    }
+
+
+}
