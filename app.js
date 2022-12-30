@@ -12,6 +12,7 @@ const tourRouter = require("./routes/tourRoutes")
 const userRouter = require("./routes/userRoutes")
 const reviewRouter = require("./routes/reviewRoutes")
 const viewRouter = require("./routes/viewRoutes")
+const bookingRouter = require("./routes/bookingRoute")
 
 const app = express()
 const AppError = require("./utils/appError")
@@ -110,6 +111,8 @@ app.use("/", viewRouter)
 app.use("/api/v1/tours", tourRouter)
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/reviews", reviewRouter)
+app.use("/api/v1/bookings", bookingRouter)
+
 //error handling for invalid routes
 //has to be at the end because of the request respons ecycle
 app.all("*", (req, res, next) => {

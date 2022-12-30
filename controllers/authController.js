@@ -5,6 +5,7 @@ const User = require("../models/userModel")
 const catchAsync = require("../utils/catchAsync")
 const sendEmail = require("../utils/email")
 const crypto = require("crypto")
+const Email = require("../utils/email")
 
 const signToken = id => {
     return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -45,6 +46,13 @@ exports.signUp = catchAsync(async (req, res, next) => {
         passwordChangedAt: req.body.passwordChangedAt,
         role: req.body.role
     })
+
+    const url = `${req.protocol}://localhost:3000/me`
+
+    console.log(url)
+
+    await new Email(newUser, url).sendWelcome()
+
     createSendToken(newUser, 201, res)
 })
 exports.login = catchAsync(async (req, res, next) => {
@@ -140,13 +148,15 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     \nIf you didn't forget your password, please ignore this email!`
 
     try {
-        await sendEmail(
-            {
-                email: user.email,
-                subject: "Your password reset token (valid for 10 mins)",
-                message: message
-            }
-        )
+        // await sendEmail(
+        //     {
+        //         email: user.email,
+        //         subject: "Your password reset token (valid for 10 mins)",
+        //         message: message
+        //     }
+        // )
+
+        await new Email(user, resetURL).sendPasswordReset()
 
         res.status(200).json({
             status: "success",

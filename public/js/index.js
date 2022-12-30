@@ -4,8 +4,11 @@ import "@babel/polyfill"
 import { login, logout } from "./login"
 import { displayMap } from "./mapbox"
 import { updateSettings } from "./updateSettings"
+import { bookTour } from "./stripe"
 
 var mapbox = document.getElementById("map")
+
+const bookBtn = document.getElementById("book-tour")
 
 if (mapbox) {
     const locations = JSON.parse(mapbox.dataset.locations)
@@ -73,6 +76,16 @@ if (formpassword) {
     }
 
     )
+}
+
+if (bookBtn) {
+    bookBtn.addEventListener("click", async event => {
+        event.target.textContent = "Processing"
+
+        const tourId = event.target.dataset.tourId
+        bookTour(tourId)
+
+    })
 }
 
 
