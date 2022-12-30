@@ -49,8 +49,6 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
     const url = `${req.protocol}://localhost:3000/me`
 
-    console.log(url)
-
     await new Email(newUser, url).sendWelcome()
 
     createSendToken(newUser, 201, res)
@@ -99,7 +97,6 @@ exports.protect = catchAsync(async (req, res, next) => {
         return next(new AppError("You are not logged in! Please login to get access", 401))
     }
     //2) Validate token
-    console.log(token)
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
 
     //3) Check if user still exists

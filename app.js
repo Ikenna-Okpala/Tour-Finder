@@ -7,6 +7,7 @@ const mongoSanitize = require("express-mongo-sanitize")
 const xss = require("xss-clean")
 const hpp = require("hpp")
 const path = require("path")
+const compression = require("compression")
 
 const tourRouter = require("./routes/tourRoutes")
 const userRouter = require("./routes/userRoutes")
@@ -86,6 +87,8 @@ app.use((req, res, next) => {
     // console.log("New", req.cookies)
     next()
 })
+
+app.use(compression())
 
 //specify v1
 //route habnndlers

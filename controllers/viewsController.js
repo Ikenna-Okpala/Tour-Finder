@@ -51,7 +51,6 @@ exports.getAccount = (req, res) => {
     res.status(200).render("account", {
         title: "Your account"
     })
-    console.log("hit")
 }
 
 exports.updateUserData = catchAsync(async (req, res) => {
@@ -76,8 +75,6 @@ exports.getMyTours = catchAsync(async (req, res, next) => {
     // Find Tours with returned id
 
     const tourIDs = bookings.map(booking => booking.tour)
-
-    console.log(tourIDs)
 
     const tours = await Tour.find({ _id: { $in: tourIDs } })
 

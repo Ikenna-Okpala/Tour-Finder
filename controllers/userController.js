@@ -52,8 +52,6 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
     //2) Update user document
 
-    console.log("FILE", req.file)
-
     if (req.body.password || req.body.passwordConfirm) {
         return next(new AppError("This route is not for password updates. Please use /updateMyPassword.", 400))
     }
@@ -99,8 +97,6 @@ exports.patchUser = factory.updateOne(User)
 exports.getUser = factory.getOne(User)
 
 exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
-
-    console.log(req.file)
 
     if (!req.file) return next()
 

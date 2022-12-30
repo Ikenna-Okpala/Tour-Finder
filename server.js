@@ -4,15 +4,15 @@ dotenv.config({ path: './config.env' });
 
 process.on("unhandledRejection", error => {
     //central place to handle all promise reqjections
-    console.log(error.name, error.message)
-    console.log("UNHANDLED REJECTION!!!! Shutting down....")
+    //console.log(error.name, error.message)
+    //console.log("UNHANDLED REJECTION!!!! Shutting down....")
     process.exit(1)
 
 })
 
 process.on("uncaughtException", error => {
-    console.log(error.name, error.message)
-    console.log("UNHANDLED REJECTION!!!! Shutting down....")
+    //console.log(error.name, error.message)
+    // console.log("UNHANDLED REJECTION!!!! Shutting down....")
     process.exit(1)
 })
 const DB = process.env.DATABASE.replace(
@@ -25,7 +25,7 @@ mongoose.connect(DB, {
     useCreateIndex: true,
     useFindAndModify: false,
 }).then(() => {
-    console.log("DB connection successful")
+    //console.log("DB connection successful")
 })
 
 
@@ -36,6 +36,10 @@ const app = require('./app');
 // console.log(process.env)
 const port = process.env.PORT;
 //server automaticaly starts when data is written
-const server = app.listen(port, () => console.log(`App running on port: ${port}...`));
+const server = app.listen(port, () => {
+
+    // console.log(`App running on port: ${port}...`)
+
+});
 
 //close down server in terms of this errors
