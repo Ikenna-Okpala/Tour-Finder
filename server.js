@@ -34,7 +34,7 @@ const app = require('./app');
 
 //set by express
 // console.log(process.env)
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 //server automaticaly starts when data is written
 const server = app.listen(port, () => {
 
